@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { execSync } from 'child_process';
-import { renameSync } from 'fs';
+import { copyFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { env } from 'process';
 
@@ -17,7 +17,8 @@ export class RepoService {
 
     const newPath = join(this.repoDir, file.originalname);
 
-    renameSync(file.path, newPath);
+    copyFileSync(file.path, newPath);
+    unlinkSync(file.path);
 
     return execSync(
       `repo-add '${this.repoDir}/pkgs.db.tar.xz' ${newPath}`,
