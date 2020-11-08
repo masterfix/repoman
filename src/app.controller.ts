@@ -2,14 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as multer from 'multer';
-import { AppService } from './app.service';
 import { RepoService } from './repo/repo.service';
 
 @Controller()
@@ -21,7 +19,7 @@ export class AppController {
     FileInterceptor('file', {
       storage: multer.diskStorage({}),
       fileFilter: (_req, file, cb) => {
-        cb(null, file.originalname.endsWith('.pkg.tar.xz'));
+        cb(null, file.originalname.endsWith('.pkg.tar.gz'));
       },
     }),
   )
