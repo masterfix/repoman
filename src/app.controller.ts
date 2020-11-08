@@ -1,18 +1,39 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as multer from 'multer';
 import { AppService } from './app.service';
+import { RepoService } from './repo/repo.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(private readonly repoService: RepoService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('add')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.diskStorage({}),
+      fileFilter: (_req, file, cb) => {
+        cb(null, file.originalname.endsWith('.pkg.tar.xz'));
+      },
+    }),
+  )
+  addPackage(@UploadedFile() file): string {
+    if (!file) {
+      throw new BadRequestException('invalid file given');
+    }
+    return this.repoService.addPackage(file);
   }
 
-  @Get('add')
-  add(): string {
-    const output = this.appService.addToRepo();
-    return output;
+  @Post('remove')
+  removePackage(@Body('pkg') pkgName: string): string {
+    return this.repoService.removePackage(pkgName);
   }
 }

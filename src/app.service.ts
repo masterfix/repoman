@@ -4,15 +4,19 @@ import { env } from 'process';
 
 @Injectable()
 export class AppService {
+  private readonly repoDir: string;
+
+  constructor() {
+    this.repoDir = env.REPO_DIR;
+  }
+
   getHello(): string {
     return 'Hello World!';
   }
 
-  addToRepo(): string {
-    const repo_dir = env.REPO_DIR;
+  addToRepo(file): string {
     return execSync(
-      `repo-add '${repo_dir}/pkgs.db.tar.xz' bla.pkg.tar.xz`,
+      `repo-add '${this.repoDir}/pkgs.db.tar.xz' bla.pkg.tar.xz`,
     ).toString();
   }
-
 }

@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { env } from 'process';
+import { RepoService } from './repo/repo.service';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { env } from 'process';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RepoService],
 })
 export class AppModule { }
