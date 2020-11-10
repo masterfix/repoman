@@ -9,9 +9,12 @@ import { RepoService } from './repo/repo.service';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: env.REPO_DIR,
+      serveStaticOptions: {
+        index: false,
+      },
     }),
   ],
   controllers: [AppController],
   providers: [AppService, RepoService],
 })
-export class AppModule { }
+export class AppModule {}
