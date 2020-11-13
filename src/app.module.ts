@@ -4,11 +4,11 @@ import * as serveIndex from 'serve-index';
 import * as serveStatic from 'serve-static';
 import { AppController } from './app.controller';
 import { RepoService } from './repo/repo.service';
+import { SettingsService } from './settings/settings.service';
 
 @Module({
-  imports: [],
   controllers: [AppController],
-  providers: [RepoService],
+  providers: [RepoService, SettingsService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

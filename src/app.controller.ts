@@ -24,12 +24,12 @@ export class AppController {
     }),
   )
   addPackage(
-    @UploadedFile() file,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<{ stdout: string; stderr: string }> {
     if (!file) {
       throw new BadRequestException('invalid file given');
     }
-    return this.repoService.addPackage(file);
+    return this.repoService.addPackage(file.path, file.originalname);
   }
 
   @Post('remove')

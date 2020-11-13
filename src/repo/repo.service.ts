@@ -1,23 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { exec } from 'child_process';
-import { promises as fs } from 'fs';
+import { Request } from 'express';
+import { PathLike, promises as fs } from 'fs';
 import { join } from 'path';
-import { env } from 'process';
+import { SettingsService } from '../settings/settings.service';
 
 @Injectable()
 export class RepoService {
   private readonly repoDir: string;
 
-  constructor() {
-    this.repoDir = env.REPO_DIR;
+  constructor(settingsService: SettingsService) {
+    this.repoDir = settingsService.getRepoPath();
   }
 
-  addPackage(file): Promise<{ stdout: string; stderr: string }> {
-    const newPath = join(this.repoDir, file.originalname);
+  addPackage(
+    filePath: PathLike,
+    fileName: string,
+  ): Promise<{ stdout: string; stderr: string }> {
+    const newPath = join(this.repoDir, fileName);
 
     return fs
-      .copyFile(file.path, newPath)
-      .then(() => fs.unlink(file.path))
+      .copyFile(filePath, newPath)
+      .then(() => fs.unlink(filePath))
       .then(() =>
         this.exec(`repo-add '${this.repoDir}/pkgs.db.tar.xz' ${newPath}`),
       );
