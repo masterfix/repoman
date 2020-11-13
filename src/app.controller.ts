@@ -23,19 +23,21 @@ export class AppController {
       },
     }),
   )
-  addPackage(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<{ stdout: string; stderr: string }> {
+  addPackage(@UploadedFile() file: Express.Multer.File): Promise<string> {
     if (!file) {
       throw new BadRequestException('invalid file given');
     }
-    return this.repoService.addPackage(file.path, file.originalname);
+    return this.repoService
+      .addPackage(file.path, file.originalname)
+      .then((result) => {
+        return result.stdout;
+      });
   }
 
   @Post('remove')
-  removePackage(
-    @Body('pkg') pkgName: string,
-  ): Promise<{ stdout: string; stderr: string }> {
-    return this.repoService.removePackage(pkgName);
+  removePackage(@Body('pkg') pkgName: string): Promise<string> {
+    return this.repoService
+      .removePackage(pkgName)
+      .then((result) => result.stdout);
   }
 }
