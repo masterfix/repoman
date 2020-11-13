@@ -14,9 +14,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     const repoDir: string = env.REPO_DIR;
     consumer
-      .apply(serveStatic(repoDir, {}))
-      .forRoutes('/')
-      .apply(serveIndex(repoDir, { icons: true }))
-      .forRoutes('/');
+      .apply(serveStatic(repoDir, {}), serveIndex(repoDir, { icons: true }))
+      .forRoutes('/pkgs');
   }
 }
