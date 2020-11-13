@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { execSync } from 'child_process';
-import { copyFileSync, unlinkSync } from 'fs';
+import { exec } from 'child_process';
+import { promises as fs } from 'fs';
 import { join } from 'path';
 import { env } from 'process';
 
@@ -12,22 +12,29 @@ export class RepoService {
     this.repoDir = env.REPO_DIR;
   }
 
-  addPackage(file): string {
-    //console.log('file to add:', file);
-
+  addPackage(file): Promise<{ stdout: string; stderr: string }> {
     const newPath = join(this.repoDir, file.originalname);
 
-    copyFileSync(file.path, newPath);
-    unlinkSync(file.path);
-
-    return execSync(
-      `repo-add '${this.repoDir}/pkgs.db.tar.xz' ${newPath}`,
-    ).toString();
+    return fs
+      .copyFile(file.path, newPath)
+      .then(() => fs.unlink(file.path))
+      .then(() =>
+        this.exec(`repo-add '${this.repoDir}/pkgs.db.tar.xz' ${newPath}`),
+      );
   }
 
-  removePackage(pkgName: string): string {
-    return execSync(
-      `repo-remove '${this.repoDir}/pkgs.db.tar.xz' ${pkgName}`,
-    ).toString();
+  removePackage(pkgName: string): Promise<{ stdout: string; stderr: string }> {
+    return this.exec(`repo-remove '${this.repoDir}/pkgs.db.tar.xz' ${pkgName}`);
+  }
+
+  private exec(command: string): Promise<{ stdout: string; stderr: string }> {
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        }
+        resolve({ stdout, stderr });
+      });
+    });
   }
 }

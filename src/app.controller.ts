@@ -23,7 +23,9 @@ export class AppController {
       },
     }),
   )
-  addPackage(@UploadedFile() file): string {
+  addPackage(
+    @UploadedFile() file,
+  ): Promise<{ stdout: string; stderr: string }> {
     if (!file) {
       throw new BadRequestException('invalid file given');
     }
@@ -31,7 +33,9 @@ export class AppController {
   }
 
   @Post('remove')
-  removePackage(@Body('pkg') pkgName: string): string {
+  removePackage(
+    @Body('pkg') pkgName: string,
+  ): Promise<{ stdout: string; stderr: string }> {
     return this.repoService.removePackage(pkgName);
   }
 }
